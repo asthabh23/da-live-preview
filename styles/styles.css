@@ -260,3 +260,7 @@ main .section.highlight {
 .section.hidden {
   display: none;
 }
+
+.da-live-preview .hero {
+  min-height: 300px;
+}
