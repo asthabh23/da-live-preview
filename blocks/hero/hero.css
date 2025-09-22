@@ -7,6 +7,7 @@
   position: relative;
   padding: 40px 24px;
   min-height: 30vh;
+  height: 100vh;
 }
 
 .hero h1,
