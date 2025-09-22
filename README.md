@@ -21,22 +21,21 @@ When using viewport height (`vh`) units in CSS, commonly for hero blocks set to 
 
 ### Solution
 
-The fix is implemented in `scripts/scripts.js` (lines 158-176) and works by:
+The fix is implemented in [`scripts/scripts.js`](scripts/scripts.js#L158-L176) and works by:
 
 1. **Adding a CSS class to the live preview iframe body**: The `da-live-preview` class is automatically added to the `<body>` element when in DA live preview mode
-2. **Using targeted CSS rules**: You can create CSS rules that specifically target elements within the live preview iframe to prevent the VH loop
+2. **Using targeted CSS rules**: You can create CSS rules (for different media viewports) that specifically target elements within the live preview iframe to prevent the VH loop.
 
 **Example CSS fix:**
 ```css
 /* Normal styling */
-.hero {
+.my-100vh-block {
   height: 100vh;
 }
 
 /* Override for DA live preview to prevent VH loop */
-body.da-live-preview .hero {
-  height: 500px; /* Fixed height instead of vh */
-  min-height: 400px;
+body.da-live-preview .my-100vh-block {
+  height: 500px;
 }
 ```
 
@@ -44,4 +43,4 @@ The implementation automatically handles cases where the body element is replace
 
 ## Usage
 
-Copy the implementation from `scripts/scripts.js` to your project and add CSS targeting `body.da-live-preview` for any blocks using `vh` units to resolve the infinite height loop.
+Copy the implementation from [`scripts/scripts.js`](scripts/scripts.js#L158-L176) to your project and add CSS targeting `body.da-live-preview` for any blocks using `vh` units to resolve the infinite height loop.
