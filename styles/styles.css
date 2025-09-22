@@ -263,4 +263,5 @@ main .section.highlight {
 
 .da-live-preview .hero {
   min-height: 300px;
+  height: 400px;
 }
