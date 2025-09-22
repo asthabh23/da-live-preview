@@ -1,43 +1,47 @@
-# Your Project's Title...
-Your project's description...
+# Infinite viewport height fix for DA live preview
+
+Have you been facing the infinite viewport height issue in DA live preview? This project demonstrates a robust fix for the common problem where `vh` units cause endless height recalculation loops in DA's live preview iframe. Implement the fix in your project similar to what's done here and you'll have a reliable solution in place!
+
+This repository serves as both a working example and reference implementation for resolving viewport height conflicts that occur when using CSS `vh` units with DA live preview's dynamic iframe resizing.
 
 ## Environments
-- Preview: https://main--{repo}--{owner}.aem.page/
-- Live: https://main--{repo}--{owner}.aem.live/
-- Block Library: https://main--{repo}--{owner}.aem.page/tools/sidekick/library.html?plugin=blocks
+- Preview: https://main--da-live-preview--asthabh23.aem.page/
+- Live: https://main--da-live-preview--asthabh23.aem.live/
 
-## Documentation
+## DA Live Preview VH Issue
 
-Before using the aem-boilerplate, we recommand you to go through the documentation on [www.aem.live](https://www.aem.live/docs/) and [experienceleague.adobe.com](https://experienceleague.adobe.com/en/docs/experience-manager-cloud-service/content/edge-delivery/wysiwyg-authoring/authoring), more specifically:
-1. [Getting Started](https://experienceleague.adobe.com/en/docs/experience-manager-cloud-service/content/edge-delivery/wysiwyg-authoring/edge-dev-getting-started), [Creating Blocks](https://experienceleague.adobe.com/en/docs/experience-manager-cloud-service/content/edge-delivery/wysiwyg-authoring/create-block), [Content Modelling](https://experienceleague.adobe.com/en/docs/experience-manager-cloud-service/content/edge-delivery/wysiwyg-authoring/content-modeling)
-2. [The Anatomy of a Project](https://www.aem.live/developer/anatomy-of-a-project)
-3. [Web Performance](https://www.aem.live/developer/keeping-it-100)
-4. [Markup, Sections, Blocks, and Auto Blocking](https://www.aem.live/developer/markup-sections-blocks)
+When using viewport height (`vh`) units in CSS, commonly for hero blocks set to `100vh`, you may encounter an infinite loop issue in DA's live preview mode. This occurs due to the following sequence:
 
-Furthremore, we encourage you to watch the recordings of any of our previous presentations or sessions:
-- [Getting started with AEM Authoring and Edge Delivery Services](https://experienceleague.adobe.com/en/docs/events/experience-manager-gems-recordings/gems2024/aem-authoring-and-edge-delivery)
+1. CSS sets the hero height to `100vh` (matching the current viewport)
+2. DA live preview detects this as a height change and adjusts the iframe height accordingly
+3. The viewport height changes due to the iframe resize
+4. CSS recalculates `100vh` to match the new viewport height
+5. DA live preview detects another height change
+6. The cycle repeats infinitely
 
-## Prerequisites
+### Solution
 
-- nodejs 18.3.x or newer
-- AEM Cloud Service release 2024.8 or newer (>= `17465`)
+The fix is implemented in `scripts/scripts.js` (lines 158-176) and works by:
 
-## Installation
+1. **Adding a CSS class to the live preview iframe body**: The `da-live-preview` class is automatically added to the `<body>` element when in DA live preview mode
+2. **Using targeted CSS rules**: You can create CSS rules that specifically target elements within the live preview iframe to prevent the VH loop
 
-```sh
-npm i
+**Example CSS fix:**
+```css
+/* Normal styling */
+.hero {
+  height: 100vh;
+}
+
+/* Override for DA live preview to prevent VH loop */
+body.da-live-preview .hero {
+  height: 500px; /* Fixed height instead of vh */
+  min-height: 400px;
+}
 ```
 
-## Linting
+The implementation automatically handles cases where the body element is replaced during preview updates by using a `MutationObserver` to re-apply the class as needed.
 
-```sh
-npm run lint
-```
+## Usage
 
-## Local development
-
-1. Create a new repository based on the `aem-boilerplate` template and add a mountpoint in the `fstab.yaml`
-1. Add the [AEM Code Sync GitHub App](https://github.com/apps/aem-code-sync) to the repository
-1. Install the [AEM CLI](https://github.com/adobe/helix-cli): `npm install -g @adobe/aem-cli`
-1. Start AEM Proxy: `aem up` (opens your browser at `http://localhost:3000`)
-1. Open the `{repo}` directory in your favorite IDE and start coding :)
+Copy the implementation from `scripts/scripts.js` to your project and add CSS targeting `body.da-live-preview` for any blocks using `vh` units to resolve the infinite height loop.
